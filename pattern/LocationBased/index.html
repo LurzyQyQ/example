@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>LocationBased</title>
+    <style>
+        .fps {
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: white;
+        }
+    </style>
+    <script src="js/aframe.min.js"></script>
+    <script src="js/aframe-look-at-component.min.js"></script>
+    <script src="js/aframe-ar-nft.js"></script>
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+
+    <div class="fps">fps: <span id="fps"></span></div>
+
+    <a-scene arjs embedded renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector>
+        <!-- 模型实例 -->
+        <a-entity id="ent_1" gltf-model="module/gengar_pokemon/scene.gltf" scale="0.1 0.1 0.1" position="0 0 0"
+            rotation="-90 0 0" gps-entity-place="latitude: 23.13533631; longitude: 113.27143134;">
+        </a-entity>
+        <a-camera look-controls-enabled='false' arjs-look-controls='smoothingFactor: 0.1'
+            gps-camera='gpsMinDistance: 5'>
+        </a-camera>
+    </a-scene>
+
+    <!-- fps -->
+    <script type="text/javascript">
+        window.requestAnimFrame = (function () {
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.ieRequestAnimationFrame ||
+                function (callback) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+        })();
+        let fpsElement = document.getElementById("fps");
+        let then = Date.now() / 1000; // 以秒为单位计算时间
+        let render = function () {
+            let now = Date.now() / 1000; // 以秒为单位计算时间
+            // 计算自上一帧起的时间
+            let elapsedTime = now - then;
+            then = now;
+            // 计算fps
+            let fps = 1 / elapsedTime;
+            fpsElement.innerText = parseInt(fps.toFixed(2));
+            requestAnimFrame(render);
+        };
+        render();
+
+        if (navigator.geolocation) { // 判断设备是否支持定位
+            navigator.geolocation.getCurrentPosition(position => {
+                let ele = document.querySelector('#ent_1').getAttribute('gps-entity-place')
+                ele.latitude = position.coords.latitude
+                ele.longitude = position.coords.longitude
+            }, err => {
+                console.log(err.message);
+            }, {
+                timeout: 10000
+            });
+        } else {
+            alert("不支持定位");
+        }
+    </script>
+</body>
+
+</html>

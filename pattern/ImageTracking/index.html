@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <title>ImageTracking</title>
+    <style>
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .arjs-loader div {
+            text-align: center;
+            font-size: 1.25em;
+            color: white;
+        }
+
+        .fps {
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: white;
+        }
+    </style>
+    <script src="js/aframe-master.min.js"></script>
+    <script src="js/aframe-ar-nft.js"></script>
+    <script src="js/gesture-detector.js"></script>
+    <script src="js/gesture-handler.js"></script>
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+
+    <div class="fps">fps: <span id="fps"></span></div>
+
+    <div class="arjs-loader">
+        <div>正在加载AR模型，请稍候...</div>
+    </div>
+
+    <a-scene 
+        arjs
+        embedded
+        renderer="logarithmicDepthBuffer: true;"
+        vr-mode-ui="enabled: false"
+        gesture-detector
+        >
+        <a-nft 
+            type="nft" 
+            url="app/ImageTracking/nft/aamxu/aamxu" 
+            smooth="true" 
+            smoothCount="10"
+            smoothTolerance=".01" 
+            smoothThreshold="5" 
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            >
+            <a-entity 
+                gltf-model="module/multiversus_bugs_bunny/scene.gltf" 
+                scale="30 30 30" 
+                position="40 -250 0" 
+                gesture-handler
+                >
+            </a-entity>
+        </a-nft>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+</body>
+
+<script type="text/javascript">
+    // fps
+    window.requestAnimFrame = (function () {
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.ieRequestAnimationFrame ||
+            function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+    })();
+    let fpsElement = document.getElementById("fps");
+    let then = Date.now() / 1000; // 以秒为单位计算时间
+    let render = function () {
+        let now = Date.now() / 1000; // 以秒为单位计算时间
+        // 计算自上一帧起的时间
+        let elapsedTime = now - then;
+        then = now;
+        // 计算fps
+        let fps = 1 / elapsedTime;
+        fpsElement.innerText = parseInt(fps.toFixed(2));
+        requestAnimFrame(render);
+    };
+    render();
+</script>
+
+</html>
